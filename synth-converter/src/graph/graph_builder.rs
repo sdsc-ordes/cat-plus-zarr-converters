@@ -30,7 +30,7 @@ impl GraphBuilder {
         })
     }
 
-    fn add_date_time_to_graph(
+    fn add_date_time(
         &mut self,
         subject: &SimpleTerm,
         predicate: &NsTerm<'_>,
