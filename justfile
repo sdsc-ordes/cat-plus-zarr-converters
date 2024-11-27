@@ -8,7 +8,7 @@ default:
   just --list
 
 build:
-    cd "{{root_dir}}" && \
+    cd "{{root_dir}}/synth-converter" && \
         cargo build --bin synth-converter
 
 # Enter a Nix development shell.
