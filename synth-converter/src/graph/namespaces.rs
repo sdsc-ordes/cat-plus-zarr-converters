@@ -2,6 +2,23 @@ use lazy_static::lazy_static;
 use sophia::api::ns::Namespace;
 use sophia_api::{prefix::Prefix, prelude::Iri};
 
+pub mod ex {
+    use lazy_static::lazy_static;
+    use sophia::api::ns::Namespace;
+    use sophia_api::namespace;
+
+    namespace! {
+      "http://example.org/ns#",
+      Foo,
+      Bar,
+      Baz
+    }
+
+    lazy_static! {
+        pub static ref ns: Namespace<&'static str> = Namespace::new(PREFIX.as_str()).unwrap();
+    }
+}
+
 lazy_static! {
     pub static ref RDF: Namespace<&'static str> =
         Namespace::new("http://www.w3.org/1999/02/22-rdf-syntax-ns#").unwrap();

@@ -7,9 +7,20 @@ root_dir := `git rev-parse --show-toplevel`
 default:
   just --list
 
-build:
+# Build the synth-converter.
+build *args:
     cd "{{root_dir}}/synth-converter" && \
-        cargo build --bin synth-converter
+        cargo build --bin synth-converter {{args}}
+
+# Test the synth-converter.
+test *args:
+    cd "{{root_dir}}/synth-converter" && \
+        cargo test --bin synth-converter {{args}}
+
+# Run the synth-converter.
+run *args:
+    cd "{{root_dir}}/synth-converter" && \
+        cargo run --bin synth-converter {{args}}
 
 # Enter a Nix development shell.
 nix-develop *args:
