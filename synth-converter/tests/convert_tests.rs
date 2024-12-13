@@ -51,35 +51,31 @@ fn test_convert_filtrate_action() {
 }
 
 #[test]
-fn test_convert_set_temperature_action() {
+fn test_convert_pressure_action() {
     let json_data = r#"
-    {
-        "batchID": "23",
-        "Actions": [
-            {
-                "actionName": "setTemperatureAction",
-                "speedShaker": {
-                    "value": 152,
-                    "unit": "rpm"
-                },
-                "temperatureTumbleStirrer": {
-                    "value": 25,
-                    "unit": "°C"
-                },
-                "temperatureShaker": {
-                    "value": 25,
-                    "unit": "°C"
-                },
-                "startTime": "2024-07-25T12:00:00",
-                "endingTime": "2024-07-25T12:00:02",
-                "methodName": "set_temperature",
-                "equipmentName": "Chemspeed SWING XL",
-                "subEquipmentName": "heater",
-                "containerID": "1",
-                "containerBarcode": "1"
-            }
-        ]
-    }
+        {
+            "batchID": "23",
+            "Actions": [
+                {
+                    "actionName": "setPressureAction",
+                    "pressureMeasurement": {
+                        "value": 5,
+                        "unit": "bar",
+                        "errorMargin": {
+                            "value": 1,
+                            "unit": "bar"
+                        }
+                    },
+                    "startTime": "2024-07-25T12:03:50",
+                    "endingTime": "2024-07-25T12:04:05",
+                    "methodName": "set_pressure",
+                    "equipmentName": "Chemspeed SWING XL",
+                    "subEquipmentName": "MTP_Pressure",
+                    "containerID": "1",
+                    "containerBarcode": "1"
+                }
+            ]
+        }
     "#;
     let result = json_to_rdf(json_data, "turtle");
     let expected_ttl = r#"
@@ -92,19 +88,102 @@ fn test_convert_set_temperature_action() {
         PREFIX purl: <http://purl.allotrope.org/ontologies/>
         PREFIX obo: <http://purl.obolibrary.org/obo/>
         PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-        [] a cat:setTemperatureAction;
+
+        [] a cat:SetPressureAction;
         cat:containerBarcode "1";
         cat:containerID "1";
         cat:hasBatch [ a cat:Batch;
             schema:name "23"];
-        cat:localEquipmentName "heater";
+        cat:subEquipmentName "MTP_Pressure";
+        allores:AFR_0001606 "set_pressure";
+        allores:AFR_0001723 "Chemspeed SWING XL";
+        allores:AFR_0002423 "2024-07-25T12:04:05"^^xsd:dateTime;
+        allores:AFX_0000622 "2024-07-25T12:03:50"^^xsd:dateTime.
+    "#;
+    let expected_graph = parse_turtle_to_graph(&expected_ttl).unwrap();
+    let result_ttl = result.as_ref().unwrap().as_str();
+    let result_graph = parse_turtle_to_graph(&result_ttl).unwrap();
+    let graphs_match = isomorphic_graphs(&result_graph, &expected_graph);
+    assert_eq!(graphs_match.unwrap(), true);
+}
+
+#[test]
+fn test_convert_set_temperature_action() {
+    let json_data = r#"
+        {
+            "batchID": "23",
+            "Actions": [
+                {
+                    "actionName": "setTemperatureAction",
+                    "speedShaker": {
+                        "value": 152,
+                        "unit": "rpm",
+                        "errorMargin": {
+                            "value": 5,
+                            "unit": "rpm"
+                        }
+                    },
+                    "temperatureTumbleStirrer": {
+                        "value": 25,
+                        "unit": "°C",
+                        "errorMargin": {
+                            "value": 2,
+                            "unit": "°C"
+                        }
+                    },
+                    "temperatureShaker": {
+                        "value": 25,
+                        "unit": "°C",
+                        "errorMargin": {
+                            "value": 1,
+                            "unit": "°C"
+                        }
+                    },
+                    "startTime": "2024-07-25T12:00:00",
+                    "endingTime": "2024-07-25T12:00:02",
+                    "methodName": "set_temperature",
+                    "equipmentName": "Chemspeed SWING XL",
+                    "subEquipmentName": "heater",
+                    "containerID": "1",
+                    "containerBarcode": "1"
+                }
+            ]
+        }
+    "#;
+    let result = json_to_rdf(json_data, "turtle");
+    let expected_ttl = r#"
+        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        PREFIX cat: <http://example.org/cat#>
+        PREFIX schema: <https://schema.org/>
+        PREFIX allores: <http://purl.allotrope.org/ontologies/result#>
+        PREFIX qudt: <http://qudt.org/schema/qudt/>
+        PREFIX alloqual: <http://purl.allotrope.org/ontologies/quality#>
+        PREFIX purl: <http://purl.allotrope.org/ontologies/>
+        PREFIX obo: <http://purl.obolibrary.org/obo/>
+        PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+        [] a cat:SetTemperatureAction;
+        cat:containerBarcode "1";
+        cat:containerID "1";
+        cat:hasBatch [ a cat:Batch;
+            schema:name "23"];
         cat:speedInRPM [
+            cat:errorMargin [
+                qudt:unit "rpm";
+                qudt:value "5"^^xsd:double];
             qudt:unit "rpm";
             qudt:value "152"^^xsd:double];
+        cat:subEquipmentName "heater";
         cat:temperatureShakerShape [
+            cat:errorMargin [
+                qudt:unit "°C";
+                qudt:value "1"^^xsd:double];
             qudt:unit "°C";
             qudt:value "25"^^xsd:double];
         cat:temperatureTumbleStirrerShape [
+            cat:errorMargin [
+                qudt:unit "°C";
+                qudt:value "2"^^xsd:double];
             qudt:unit "°C";
             qudt:value "25"^^xsd:double];
         allores:AFR_0001606 "set_temperature";
@@ -251,33 +330,45 @@ fn test_convert_add_action() {
 #[test]
 fn test_convert_shake_action() {
     let json_data = r#"
-    {
-        "batchID": "23",
-        "Actions": [
-            {
-                "actionName": "shakeAction",
-                "speedTumbleStirrer": {
-                    "value": 600,
-                    "unit": "rpm"
-                },
-                "startTime": "2024-07-25T12:03:31",
-                "endingTime": "2024-07-25T12:15:20",
-                "methodName": "shake",
-                "temperatureTumbleStirrer": {
-                    "value": 25,
-                    "unit": "°C"
-                },
-                "temperatureShaker": {
-                    "value": 25,
-                    "unit": "°C"
-                },
-                "equipmentName": "Chemspeed SWING XL",
-                "subEquipmentName": "Tumble Stirrer",
-                "containerID": "1",
-                "containerBarcode": "1"
-            }
-        ]
-    }
+        {
+            "batchID": "23",
+            "Actions": [
+                {
+                    "actionName": "shakeAction",
+                    "speedTumbleStirrer": {
+                        "value": 600,
+                        "unit": "rpm",
+                        "errorMargin": {
+                            "value": 1,
+                            "unit": "rpm"
+                        }
+                    },
+                    "startTime": "2024-07-25T12:03:31",
+                    "endingTime": "2024-07-25T12:15:20",
+                    "methodName": "shake",
+                    "temperatureTumbleStirrer": {
+                        "value": 25,
+                        "unit": "°C",
+                        "errorMargin": {
+                            "value": 1,
+                            "unit": "°C"
+                        }
+                    },
+                    "temperatureShaker": {
+                        "value": 25,
+                        "unit": "°C",
+                        "errorMargin": {
+                            "value": 2,
+                            "unit": "°C"
+                        }
+                    },
+                    "equipmentName": "Chemspeed SWING XL",
+                    "subEquipmentName": "Tumble Stirrer",
+                    "containerID": "1",
+                    "containerBarcode": "1"
+                }
+            ]
+        }
     "#;
     let result = json_to_rdf(json_data, "turtle");
     let expected_ttl = r#"
@@ -290,16 +381,23 @@ fn test_convert_shake_action() {
         PREFIX purl: <http://purl.allotrope.org/ontologies/>
         PREFIX obo: <http://purl.obolibrary.org/obo/>
         PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-        [] a allores:AFRE_0000001;
+
+        [] a cat:ShakeAction;
         cat:containerBarcode "1";
         cat:containerID "1";
         cat:hasBatch [ a cat:Batch;
             schema:name "23"];
-        cat:localEquipmentName "Tumble Stirrer";
+        cat:subEquipmentName "Tumble Stirrer";
         cat:temperatureShakerShape [
+            cat:errorMargin [
+                qudt:unit "°C";
+                qudt:value "2"^^xsd:double];
             qudt:unit "°C";
             qudt:value "25"^^xsd:double];
         cat:temperatureTumbleStirrerShape [
+            cat:errorMargin [
+                qudt:unit "°C";
+                qudt:value "1"^^xsd:double];
             qudt:unit "°C";
             qudt:value "25"^^xsd:double];
         allores:AFR_0001606 "shake";
@@ -317,25 +415,29 @@ fn test_convert_shake_action() {
 #[test]
 fn test_convert_set_vacuum_action() {
     let json_data = r#"
-    {
-        "batchID": "23",
-        "Actions": [
-            {
-                "actionName": "setVacuumAction",
-                "vacuum": {
-                    "value": 20,
-                    "unit": "bar"
-                },
-                "startTime": "2024-07-25T12:03:41",
-                "endingTime": "2024-07-25T12:03:50",
-                "methodName": "set_vacuum",
-                "equipmentName": "Chemspeed SWING XL",
-                "subEquipmentName": "vacuum",
-                "containerID": "1",
-                "containerBarcode": "1"
-            }
-        ]
-    }
+        {
+            "batchID": "23",
+            "Actions": [
+                {
+                    "actionName": "setVacuumAction",
+                    "vacuum": {
+                        "value": 20,
+                        "unit": "bar",
+                        "errorMargin": {
+                            "value": 0.5,
+                            "unit": "bar"
+                        }
+                    },
+                    "startTime": "2024-07-25T12:03:41",
+                    "endingTime": "2024-07-25T12:03:50",
+                    "methodName": "set_vacuum",
+                    "equipmentName": "Chemspeed SWING XL",
+                    "subEquipmentName": "vacuum",
+                    "containerID": "1",
+                    "containerBarcode": "1"
+                }
+            ]
+        }
     "#;
     let result = json_to_rdf(json_data, "turtle");
     let expected_ttl = r#"
@@ -349,12 +451,12 @@ fn test_convert_set_vacuum_action() {
         PREFIX obo: <http://purl.obolibrary.org/obo/>
         PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
-        [] a allores:AFRE_0000001;
+        [] a cat:SetVacuumAction;
         cat:containerBarcode "1";
         cat:containerID "1";
         cat:hasBatch [ a cat:Batch;
             schema:name "23"];
-        cat:localEquipmentName "vacuum";
+        cat:subEquipmentName "vacuum";
         allores:AFR_0001606 "set_vacuum";
         allores:AFR_0001723 "Chemspeed SWING XL";
         allores:AFR_0002423 "2024-07-25T12:03:50"^^xsd:dateTime;

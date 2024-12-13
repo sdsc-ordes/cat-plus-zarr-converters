@@ -2,9 +2,8 @@ use lazy_static::lazy_static;
 use sophia::api::ns::Namespace;
 use sophia_api::namespace;
 namespace! {
-    "http://purl.obolibrary.org/obo/",
-    CHEBI_25367,
-    PATO_0001019
+    "https://qudt.org/vocab/unit/",
+    MilliGM
 }
 lazy_static! {
     pub static ref ns: Namespace<&'static str> = Namespace::new(PREFIX.as_str()).unwrap();

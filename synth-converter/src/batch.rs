@@ -6,6 +6,14 @@ pub struct Batch {
     pub batch_id: String,
     #[serde(rename = "Actions")]
     pub actions: Vec<Action>,
+    #[serde(rename = "batchName")]
+    pub batch_name: Option<String>,
+    #[serde(rename = "ReactionType")]
+    pub reaction_type: Option<String>,
+    #[serde(rename = "OptimizationType")]
+    pub optimization_type: Option<String>,
+    #[serde(rename = "Link")]
+    pub link: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -26,9 +34,8 @@ pub struct Action {
     pub container_info: Option<ContainerInfo>,
     #[serde(rename = "speedShaker")]
     pub speed_shaker: Option<Observation>,
-    #[serde(flatten)]
     #[serde(rename = "hasContainerPositionAndQuantity")]
-    pub has_container_position_and_quantity: Option<Vec<ContainerPosition>>,
+    pub has_container_position_and_quantity: Option<Vec<ContainerPositionQuantityItem>>,
     #[serde(rename = "dispenseState")]
     pub dispense_state: Option<String>,
     #[serde(rename = "dispenseType")]
@@ -66,6 +73,14 @@ pub struct ContainerInfo {
 pub struct Observation {
     pub value: f64,
     pub unit: String,
+    #[serde(rename = "errorMargin")]
+    pub error_margin: Option<ErrorMargin>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct ErrorMargin {
+    pub value: f64,
+    pub unit: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -92,6 +107,9 @@ pub struct SampleItem {
     pub internal_bar_code: String,
     #[serde(rename = "expectedDatum")]
     pub expected_datum: Option<Observation>,
+    #[serde(rename = "measuredQuantity")]
+    pub measured_quantity: Option<Observation>,
+    pub concentration: Option<Observation>,
     #[serde(rename = "physicalState")]
     pub physical_state: String,
     #[serde(rename = "hasChemical")]
@@ -105,14 +123,24 @@ pub struct Chemical {
     #[serde(rename = "chemicalName")]
     pub chemical_name: String,
     #[serde(rename = "CASNumber")]
-    pub cas_number: String,
+    pub cas_number: Option<String>,
     #[serde(rename = "molecularMass")]
     pub molecular_mass: Observation,
     pub smiles: String,
+    #[serde(rename = "swissCatNumber")]
+    pub swiss_cat_number: Option<String>,
+    #[serde(rename = "Inchi")]
+    pub inchi: String,
+    pub keywords: Option<String>,
+    #[serde(rename = "molecularFormula")]
+    pub molecular_formula: String,
+    pub density: Option<Observation>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct ContainerPosition {
+pub struct ContainerPositionQuantityItem {
+    #[serde(rename = "containerID")]
+    pub container_id: String,
     pub position: String,
     pub quantity: Observation,
 }

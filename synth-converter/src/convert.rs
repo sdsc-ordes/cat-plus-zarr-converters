@@ -16,6 +16,7 @@ use anyhow::{Context, Result};
 pub fn json_to_rdf(input_content: &str, fmt: &str) -> Result<String> {
     // Parse JSON into a Batch object
     let batch = parse_json(input_content).context("Failed to parse JSON input")?;
+    print!("{:?}", batch);
 
     // Build the RDF graph
     let mut graph_builder = GraphBuilder::new().context("Failed to initialize GraphBuilder")?;
