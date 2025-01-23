@@ -12,3 +12,4 @@ debug
 data/**
 *.ttl
 *.json
+zarr-files/**

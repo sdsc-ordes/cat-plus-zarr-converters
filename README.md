@@ -5,7 +5,7 @@
 This repository contains all the Zarr converters for the different data types in the Cat+ project (Agilent, UV, IR, etc.)
 The data types are all in different formats, their data and metadata colluded together. The goal will be to convert the metadata to [an established ontology](https://github.com/sdsc-ordes/cat-plus-ontology/tree/main), and -as much as data format allow- convert the data in [Zarr array](https://zarr.readthedocs.io/en/stable/index.html).
 
-## Tools
+## Tools: RDF Converters
 
 ### synth-converter
 The Synth-converter parses a json input into an rdf graph and serializes the graph to either turtle or jsonld.
@@ -38,7 +38,29 @@ The conversion is done in the public crate `synth-converter/src/convert.rs`
 
 The rdf graph confirms to the cat+ ontology: https://github.com/sdsc-ordes/cat-plus-ontology. Currently rust offeres no Shacl Validation Library, but once such a library exists, it would make sense to add a Shacl Validation.
 
-TheShacl Validation can be done manually here: https://www.itb.ec.europa.eu/shacl/any/upload
+The SHACL Validation can be done manually here: https://www.itb.ec.europa.eu/shacl/any/upload
+
+## Tools: ZARR Converters
+
+### zarr-converter
+
+The Zarr converter has been developed (as first draft) as a CLI to handle the conversion of an Agilent data file (JSON) into a Zarr array. The file is first processed, to extract the data from the metadata. The data is then transformed into NDarrays. In future works, the metadata will be converted to RDF via an `agilent-converter` (see RDF Converters). 
+
+##### Example Usage
+
+```
+cd zarr-converter
+cargo run data/agilent-example.json /agilent
+```
+The Agilent JSON file will be placed in the `data` folder. In this same folder, the `consolidated_metadata.json` will be generated (for all the metadata in the Zarr Store). The Zarr hierarchy and zarr files will be generated in the `zarr-files` folder.
+
+##### Road Map 
+
+- Units Tests
+- Allow a Store with multigroup 
+- Decide on how to process the 3D data from Agilent
+- Create an extractor to separate data metadata from data (current status: only separate high level metadata from data (data metadata & data))
+- Adapt conversion to other file types : UV, IR (infrared), and NMR data
 
 ## Installation guidelines
 
