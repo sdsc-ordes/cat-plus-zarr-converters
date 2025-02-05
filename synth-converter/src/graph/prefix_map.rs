@@ -1,4 +1,4 @@
-use crate::graph::namespaces::{alloqual, allores, alloproc, cat, obo, purl, qudt, schema, unit};
+use crate::graph::namespaces::{alloproc, alloqual, allores, cat, obo, purl, qudt, schema, unit};
 use sophia_api::{prefix::Prefix, prelude::Iri};
 
 use lazy_static::lazy_static;
@@ -13,68 +13,17 @@ lazy_static! {
 
 pub fn generate_prefix_map() -> Vec<(Prefix<Box<str>>, Iri<Box<str>>)> {
     vec![
-        (
-            "rdf",
-            rdf.get("").expect("Namespace URI should always be valid"),
-        ),
-        (
-            "cat",
-            cat::ns
-                .get("")
-                .expect("Namespace URI should always be valid"),
-        ),
-        (
-            "schema",
-            schema::ns
-                .get("")
-                .expect("Namespace URI should always be valid"),
-        ),
-        (
-            "unit",
-            unit::ns
-                .get("")
-                .expect("Namespace URI should always be valid"),
-        ),
-        (
-            "allores",
-            allores::ns
-                .get("")
-                .expect("Namespace URI should always be valid"),
-        ),
-        (
-            "alloproc",
-            alloproc::ns
-                .get("")
-                .expect("Namespace URI should always be valid"),
-        ),
-        (
-            "qudt",
-            qudt::ns
-                .get("")
-                .expect("Namespace URI should always be valid"),
-        ),
-        (
-            "alloqual",
-            alloqual::ns
-                .get("")
-                .expect("Namespace URI should always be valid"),
-        ),
-        (
-            "purl",
-            purl::ns
-                .get("")
-                .expect("Namespace URI should always be valid"),
-        ),
-        (
-            "obo",
-            obo::ns
-                .get("")
-                .expect("Namespace URI should always be valid"),
-        ),
-        (
-            "xsd",
-            xsd.get("").expect("Namespace URI should always be valid"),
-        ),
+        ("rdf", rdf.get("").expect("Namespace URI should always be valid")),
+        ("cat", cat::ns.get("").expect("Namespace URI should always be valid")),
+        ("schema", schema::ns.get("").expect("Namespace URI should always be valid")),
+        ("unit", unit::ns.get("").expect("Namespace URI should always be valid")),
+        ("allores", allores::ns.get("").expect("Namespace URI should always be valid")),
+        ("alloproc", alloproc::ns.get("").expect("Namespace URI should always be valid")),
+        ("qudt", qudt::ns.get("").expect("Namespace URI should always be valid")),
+        ("alloqual", alloqual::ns.get("").expect("Namespace URI should always be valid")),
+        ("purl", purl::ns.get("").expect("Namespace URI should always be valid")),
+        ("obo", obo::ns.get("").expect("Namespace URI should always be valid")),
+        ("xsd", xsd.get("").expect("Namespace URI should always be valid")),
     ]
     .into_iter()
     .map(|(prefix, iri)| {

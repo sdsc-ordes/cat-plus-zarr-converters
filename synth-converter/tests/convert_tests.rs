@@ -159,8 +159,8 @@ fn test_convert_set_temperature_action() {
                 ]
             }
         "#;
-        let result = json_to_rdf(json_data, "turtle");
-        let expected_ttl = r#"
+    let result = json_to_rdf(json_data, "turtle");
+    let expected_ttl = r#"
             PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
             PREFIX cat: <http://example.org/cat#>
             PREFIX schema: <https://schema.org/>
@@ -202,16 +202,16 @@ fn test_convert_set_temperature_action() {
             allores:AFR_0002423 "2024-07-25T12:00:02"^^xsd:dateTime;
             allores:AFX_0000622 "2024-07-25T12:00:00"^^xsd:dateTime.
         "#;
-        let expected_graph = parse_turtle_to_graph(&expected_ttl).unwrap();
-        let result_ttl = result.as_ref().unwrap().as_str();
-        let result_graph = parse_turtle_to_graph(&result_ttl).unwrap();
-        let graphs_match = isomorphic_graphs(&result_graph, &expected_graph);
-        assert_eq!(graphs_match.unwrap(), true);
-    }
+    let expected_graph = parse_turtle_to_graph(&expected_ttl).unwrap();
+    let result_ttl = result.as_ref().unwrap().as_str();
+    let result_graph = parse_turtle_to_graph(&result_ttl).unwrap();
+    let graphs_match = isomorphic_graphs(&result_graph, &expected_graph);
+    assert_eq!(graphs_match.unwrap(), true);
+}
 
-    #[test]
-    fn test_convert_add_action() {
-        let json_data = r#"
+#[test]
+fn test_convert_add_action() {
+    let json_data = r#"
     {
         "batchID": "23",
         "Actions": [

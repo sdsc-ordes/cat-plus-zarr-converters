@@ -20,15 +20,11 @@ use sophia_turtle::serializer::turtle::{TurtleConfig, TurtleSerializer};
 pub fn serialize_graph_to_turtle(graph: &LightGraph) -> Result<String> {
     let prefix_map = generate_prefix_map();
 
-    let config = TurtleConfig::default()
-        .with_pretty(true)
-        .with_own_prefix_map(prefix_map);
+    let config = TurtleConfig::default().with_pretty(true).with_own_prefix_map(prefix_map);
 
     let mut serializer = TurtleSerializer::new_stringifier_with_config(config);
 
-    serializer
-        .serialize_graph(graph)
-        .context("Failed to serialize graph to Turtle")?;
+    serializer.serialize_graph(graph).context("Failed to serialize graph to Turtle")?;
 
     Ok(serializer.as_str().to_string())
 }
@@ -47,9 +43,7 @@ pub fn serialize_graph_to_jsonld(graph: &LightGraph) -> Result<String> {
     let triple_source = graph.triples();
     let quads = triple_source.to_quads();
 
-    serializer
-        .serialize_quads(quads)
-        .context("Failed to serialize graph to JSON-LD")?;
+    serializer.serialize_quads(quads).context("Failed to serialize graph to JSON-LD")?;
 
     // Extract the JSON-LD string from the serializer
     Ok(serializer.as_str().to_string())
